@@ -1,0 +1,44 @@
+version: '3'
+services:
+  react:
+    container_name: react-service
+    build: ./react
+    environment:
+      BASE_URL: http://graphql:4000
+    ports:
+      - 3000:3000
+    volumes:
+      - "./react:/app"
+
+  graphql:
+    container_name: graphql-service
+    build: ./graphql
+    environment:
+      DB_STRING: mongodb://mongo:27017/
+    ports:
+      - 4000:4000
+    volumes:
+      - "./graphql:/app"
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+
+volumes:
+  mongo-data:
+    driver: local
