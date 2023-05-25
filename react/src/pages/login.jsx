@@ -1,18 +1,34 @@
 import React from 'react'
 import LOGO from '../../public/images/twitter-logo.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
+import { useMutation } from '@apollo/client'
+import { LOGIN_USER } from '../gql-operations/mutations'
 
 export default function Login() {
+    const [loginUser, { data, loading, error }] = useMutation(LOGIN_USER, {
+        onCompleted(data) {
+            localStorage.setItem('token', data.user.token)
+            navigate('/')
+        }
+    })
+    const navigate = useNavigate()
     const formik = useFormik({
         initialValues: {
             email: "",
             password: ""
         },
         onSubmit: (values) => {
+            loginUser({
+                variables: {
+                    userSignin: values
+                }
+            })
             console.log(values)
         }
     })
+    if (loading) return <h2>Loading...</h2>
+
     return (
         <div className="container">
             <header className="container">
@@ -24,6 +40,10 @@ export default function Login() {
             <main className="container">
                 <h1>Log in to Twitter</h1>
                 <div className="container">
+                    <div style={{ textAlign: "center" }}>
+                        {error && <p style={{ color: "red" }}>{error.message}</p>}
+                        {data && data.user && <p style={{ color: "green" }}>{data.user.firstName} is signed up</p>}
+                    </div>
                     <form onSubmit={formik.handleSubmit}>
                         <div className="inputs">
                             <label className="usuario" htmlFor="usuario" >Email</label><br />

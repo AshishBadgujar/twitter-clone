@@ -1,24 +1,29 @@
 import React from 'react'
 import Feed from '../components/Feed'
 import { useQuery } from '@apollo/client'
-import { GET_MY_PROFILE } from '../gql-operations/queries'
-import { useNavigate } from 'react-router-dom'
+import { GET_MY_PROFILE, GET_USER_BY_ID } from '../gql-operations/queries'
+import { useNavigate, useParams } from 'react-router-dom'
 
-export default function Profile() {
+export default function OtherProfile() {
+    const { userId } = useParams()
     const navigate = useNavigate()
-    const { data, loading, error } = useQuery(GET_MY_PROFILE)
+    const { data, loading, error } = useQuery(GET_USER_BY_ID, {
+        variables: {
+            userId
+        }
+    })
     if (!localStorage.getItem('token')) {
         navigate('/login')
         return <h3>Unothorized</h3>
     }
     if (error) console.log(error.message)
     if (loading) return <h3>loading...</h3>
-    console.log(data)
     return (
         <>
             <div className="feed__header">
                 <h2>Profile</h2>
             </div>
+
             <div className="profile-pic-box">
                 <div className='profile-pic' >
                     <img src="https://xsgames.co/randomusers/avatar.php?g=female" alt="" />

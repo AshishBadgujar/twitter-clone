@@ -1,8 +1,17 @@
 import React from 'react'
 import LOGO from '../../public/images/twitter-logo.png'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 export default function Sidebar() {
+    const navigate = useNavigate()
+    const token = localStorage.getItem('token')
+    const onLogout = () => {
+        localStorage.removeItem('token')
+        navigate('/login')
+    }
+    const onLogin = () => {
+        navigate("/login")
+    }
     return (
         <div className="sidebar">
             <div className="logo">
@@ -47,7 +56,12 @@ export default function Sidebar() {
                 <span className="material-icons"> more_horiz </span>
                 <h2>More</h2>
             </div>
-            <button className="sidebar__tweet">Logout</button>
+
+            {token ?
+                <button className="sidebar__tweet" onClick={onLogout}>Logout</button>
+                :
+                <button className="sidebar__tweet" onClick={onLogin}>Login</button>
+            }
         </div>
     )
 }

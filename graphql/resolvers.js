@@ -10,9 +10,13 @@ const Quote = mongoose.model('Quote')
 const resolvers = {
     Query: {
         users: async () => await User.find(),
-        quotes: async () => await Quote.find().populate("by", "_id firstName"),
+        quotes: async () => await Quote.find().populate("by", "_id firstName email"),
         user: async (_, { _id }) => await User.findById(_id),
-        iquotes: async (_, { by }) => await Quote.find({ by })
+        iquotes: async (_, { by }) => await Quote.find({ by }),
+        myprofile: async (_, args, { userId }) => {
+            if (!userId) throw Error("you must be logged in")
+            return await User.findById(userId)
+        }
     },
     User: {
         quotes: async (user) => await Quote.find({ by: user._id })

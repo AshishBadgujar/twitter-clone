@@ -6,6 +6,7 @@ const typeDefs = gql`
         quotes:[QuoteWithName]
         user(_id:ID!):User
         iquotes(by:ID!):[Quote]
+        myprofile:User
     }
     type QuoteWithName{
         _id:ID
@@ -15,6 +16,7 @@ const typeDefs = gql`
     type IdName{
         _id:String
         firstName:String
+        email:String
     }
     type User{
         _id:ID
