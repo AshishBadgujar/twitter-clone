@@ -1,4 +1,4 @@
-import { ApolloServer, gql } from 'apollo-server'
+import gql from 'graphql-tag'
 
 const typeDefs = gql`
     type Query{

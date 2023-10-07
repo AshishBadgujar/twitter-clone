@@ -1,9 +1,16 @@
-import { ApolloServer, gql } from 'apollo-server'
-import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
+import express from 'express';
+import gql from "graphql-tag";
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
 import typeDefs from './schema.js'
 import { JWT_SECRET, MONGO_URL } from './config.js'
 import mongoose from 'mongoose'
 import jwt from 'jsonwebtoken'
+
+const PORT = process.env.PORT || 4000;
+const app = express();
+
+app.use(express.json());
 
 mongoose.connect(MONGO_URL, {
     useNewUrlParser: true,
@@ -20,6 +27,7 @@ import './models/User.js'
 import './models/Quote.js'
 import resolvers from './resolvers.js'
 
+
 //middleware
 const context = (({ req }) => {
     const { authorization } = req.headers
@@ -31,14 +39,22 @@ const context = (({ req }) => {
 
 
 const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context,
-    plugins: [
-        ApolloServerPluginLandingPageGraphQLPlayground()
-    ]
-})
+    typeDefs, resolvers
+});
+// Note you must call `start()` on the `ApolloServer`
+// instance before passing the instance to `expressMiddleware`
+await server.start({ context });
 
-server.listen().then(({ url }) => {
-    console.log(`server ready at ${url}`)
-})
+app.use(
+    '/graphql',
+    expressMiddleware(server),
+);
+
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port: ${PORT}`);
+});
+
+
+
+
